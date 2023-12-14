@@ -26,6 +26,11 @@ namespace QuanLyCuaHangSach.Utils
 
         public static string SUCCESS_ADD = "Thêm mới thành công.";
         public static string SUCCESS_EDIT = "Chỉnh sửa thành công.";
+        
+        public static string SUCCESS_DELETE = "Xoá thành công.";
+        public static string ERROR_NO_SELECT = "Bạn phải chọn dòng cần xóa.";
+        public static string ERROR_MANY_SELECTED = "Bạn đã chọn quá nhiều dòng. Bạn chỉ được chọn 1 dòng để thao tác.";
+
 
 
         public static string INVALID_NOTEMPTY(string name)
@@ -75,6 +80,10 @@ namespace QuanLyCuaHangSach.Utils
 
             // Sử dụng Regex.IsMatch để kiểm tra
             return Regex.IsMatch(email, pattern);
+        }
+        public static bool IsValidEmpty(string str)
+        {
+            return string.IsNullOrEmpty(str) ? true : false;
         }
     }
 }

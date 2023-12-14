@@ -26,12 +26,11 @@ namespace QuanLyCuaHangSach.Dao
                 var tmp = new Role
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Name = (string)row["Name"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Name = Convert.ToString(row["Name"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
-
                 list.Add(tmp);
             }
             return list;
@@ -39,7 +38,7 @@ namespace QuanLyCuaHangSach.Dao
 
         public Role getFirstById(string id)
         {
-            DataTable dt = ConnectDb.ExecuteReaderTable($"select * from {TableName} where  IsDeleted = 0 and id = '{id}'");
+            DataTable dt = ConnectDb.ExecuteReaderTable($"select * from {TableName} where IsDeleted = 0 and id = '{id}'");
 
             Role tmp = null;
             foreach (DataRow row in dt.Rows)
@@ -47,10 +46,10 @@ namespace QuanLyCuaHangSach.Dao
                 tmp = new Role
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Name = row["Name"]?.ToString(),
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Name = Convert.ToString(row["Name"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
             }
             return tmp;

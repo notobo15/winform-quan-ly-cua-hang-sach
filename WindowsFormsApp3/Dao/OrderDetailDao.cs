@@ -26,10 +26,12 @@ namespace QuanLyCuaHangSach.Dao
                 var tmp = new OrderDetail
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    //    Name = (string)row["Name"],
-                    // IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    OrderId = Convert.ToInt32(row["OrderId"]),
+                    BookDetailId = Convert.ToInt32(row["BookDetailId"]),
+                    Price = Convert.ToDouble(row["Price"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
 
                 list.Add(tmp);
@@ -86,12 +88,16 @@ namespace QuanLyCuaHangSach.Dao
         {
             orderDetail.CreatedAt = DateTime.Now;
             orderDetail.UpdatedAt = DateTime.Now;
-            string query = $"Insert into {TableName}(Name, CreatedAt, IsDeleted, UpdatedAt) " +
-                            $"VALUES ('{orderDetail.BuyQuantity}', " +
+            string query = $"Insert into {TableName}(OrderId,BookDetailId, Price, BuyQuantity, CreatedAt, IsDeleted, UpdatedAt) " +
+                            $"VALUES (" +
+                            $"'{orderDetail.OrderId}', " +
+                            $"'{orderDetail.BookDetailId}', " +
+                            $"'{orderDetail.Price}', " +
+                            $"'{orderDetail.BuyQuantity}', " +
                             $"'{orderDetail.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}', " +
                             $"'0', " +
                             $"'{orderDetail.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")}')";
-            return ConnectDb.ExecuteNonQuery(query); ;
+            return ConnectDb.ExecuteNonQuery(query);
         }
     }
 }

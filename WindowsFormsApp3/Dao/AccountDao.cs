@@ -29,13 +29,13 @@ namespace QuanLyCuaHangSach.Dao
                     Name =  row["Name"]?.ToString(),
                     UserName = row["UserName"]?.ToString(),
                     Password = row["Password"]?.ToString(),
-                    Gender = row["Gender"]?.ToString(),
+                    Gender = Convert.ToInt32(row["Gender"]),
                     Phone = row["Phone"]?.ToString(),
                     RoleId = Convert.ToInt32(row["RoleId"]),
-                    BirthDay = (DateTime)row["BirthDay"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    BirthDay = Convert.ToDateTime( row["BirthDay"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
 
                 list.Add(tmp);
@@ -56,20 +56,27 @@ namespace QuanLyCuaHangSach.Dao
                     Name = row["Name"]?.ToString(),
                     UserName = row["UserName"]?.ToString(),
                     Password = row["Password"]?.ToString(),
-                    Gender = row["Gender"]?.ToString(),
+                    Gender = Convert.ToInt32(row["Gender"]),
                     Phone = row["Phone"]?.ToString(),
                     RoleId = Convert.ToInt32(row["RoleId"]),
-                    BirthDay = (DateTime)row["BirthDay"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    BirthDay = Convert.ToDateTime(row["BirthDay"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
             }
             return tmp;
         }
         public bool UpdateById(Account account)
         {
-            string query = $"Update {TableName} set Name = '{account.Name}',Phone = '{account.Phone}',BirthDay = '{account.BirthDay.ToString("yyyy-MM-dd")}' where id = {account.Id}";
+            string query = $"Update {TableName} set " +
+                $"Name = '{account.Name}'," +
+                $"RoleId = '{account.RoleId}'," +
+                $"Phone = '{account.Phone}'," +
+                $"Gender = '{account.Gender}'," +
+                $"UserName = '{account.UserName}'," +
+                $"BirthDay = '{account.BirthDay.ToString("yyyy-MM-dd")}' " +
+                $"where id = {account.Id}";
             return ConnectDb.ExecuteNonQuery(query);
         }
 
@@ -82,12 +89,16 @@ namespace QuanLyCuaHangSach.Dao
 
         public bool Add(Account account)
         {
-            string query = $"Insert into {TableName}(Name, Gender, Phone,BirthDay, IsDeleted, CreatedAt, UpdatedAt) " +
+            account.UpdatedAt = DateTime.Now;
+            account.CreatedAt = DateTime.Now;
+            string query = $"Insert into {TableName}(Name,UserName, Gender, Phone,BirthDay,RoleId, IsDeleted, CreatedAt, UpdatedAt) " +
                             $"VALUES ('{account.Name}', " +
+                            $"'{account.UserName}', " +
                             $"'{account.Gender}', " +
                             $"'{account.Phone}', " +
                             $"'{account.BirthDay.ToString("yyyy-MM-dd")}', " +
-                            $"'{account.IsDeleted}', " +
+                            $"'{account.RoleId}', " +
+                            $"'0', " +
                             $"'{account.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}', " +
                             $"'{account.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")}')";
             return ConnectDb.ExecuteNonQuery(query); ;
@@ -103,19 +114,20 @@ namespace QuanLyCuaHangSach.Dao
                 tmp = new Account
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Name = row["Name"]?.ToString(),
-                    UserName = row["UserName"]?.ToString(),
-                    Password = row["Password"]?.ToString(),
-                    Gender = row["Gender"]?.ToString(),
-                    Phone = row["Phone"]?.ToString(),
                     RoleId = Convert.ToInt32(row["RoleId"]),
-                    BirthDay = (DateTime)row["BirthDay"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Name = row["RoleId"].ToString(),
+                    UserName = row["UserName"]?.ToString(),
+                    Gender = Convert.ToInt32(row["Gender"]),
                 };
             }
            return tmp;
         }
+        public bool ResetPassword(string user, string password)
+        {
+            string strQuery = $"UPDATE {TableName} set password = '{password}' where username='{user}'";
+
+            return ConnectDb.ExecuteNonQuery(strQuery);
+        }
+
     }
 }

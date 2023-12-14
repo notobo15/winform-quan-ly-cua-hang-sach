@@ -13,7 +13,6 @@ namespace QuanLyCuaHangSach.Dto
         public string Phone { get; set; }
         public DateTime BirthDay { get; set; }
         public string Address { get; set; }
-
         public int Gender { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; }

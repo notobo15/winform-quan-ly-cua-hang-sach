@@ -19,7 +19,19 @@ namespace WindowsFormsApp3
 
         private void Form2_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Application.Exit();
+            //Application.Exit();
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void materialButton1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("12312313123");
+            return;
+
         }
     }
 }

@@ -26,10 +26,10 @@ namespace QuanLyCuaHangSach.Dao
                 Category tmp = new Category
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Name = (string)row["Name"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Name = row["Name"].ToString(),
+                    IsDeleted =  Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
 
                 list.Add(tmp);
@@ -46,11 +46,11 @@ namespace QuanLyCuaHangSach.Dao
             {
                 tmp = new Category
                 {
-                    Id = (int)row["Id"],
+                    Id = Convert.ToInt32(row["Id"]),
                     Name = row["Name"].ToString(),
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
             }
             return tmp;

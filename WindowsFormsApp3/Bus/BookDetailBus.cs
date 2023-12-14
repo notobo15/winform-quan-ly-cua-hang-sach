@@ -34,5 +34,18 @@ namespace QuanLyCuaHangSach.Bus
         {
             return Dao.Add(author);
         }
+        public bool AvailableSell(int bookDetailId, int quantityeSell)
+        {
+            return Dao.AvailableSell(bookDetailId, quantityeSell);
+        }
+        public bool UpdateQuantitySell( int bookDetailId, int quantityeSell)
+        {
+            return Dao.UpdateQuantitySell(bookDetailId, quantityeSell);
+        }
+        public bool UpdateQuantityImport(int bookDetailId, int quantityeSell)
+        {
+            return Dao.UpdateQuantityImport(bookDetailId, quantityeSell);
+        }
+
     }
 }

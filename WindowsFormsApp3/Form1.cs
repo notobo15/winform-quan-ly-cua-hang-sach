@@ -1,6 +1,7 @@
 ﻿using MaterialSkin.Controls;
 using QuanLyCuaHangSach.Bus;
 using QuanLyCuaHangSach.Dto;
+using QuanLyCuaHangSach.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,14 +34,40 @@ namespace WindowsFormsApp3
         {
            
         }
+        private Bitmap Bitmap;
 
 
         private void materialButton1_Click(object sender, EventArgs e)
         {
-            this.Hide();
+            // this.Hide();
             Form2 form2 = new Form2();
-            form2.Show();
-            
+              form2.Show();
+            ///  
+
+            Bitmap  = Util.GeneratorQR("1001"); ;
+            pictureBox1.Image = Bitmap;
+
+
+        }
+
+        private void materialButton2_Click(object sender, EventArgs e)
+        {
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PNG files (*.png)|*.png";
+            saveFileDialog.Title = "Save QR Code Image";
+            saveFileDialog.ShowDialog();
+            saveFileDialog.FileName =  "qrcode.png"; // Đặt tên mặc định
+            // Kiểm tra xem người dùng đã chọn nơi để lưu chưa
+            if (!string.IsNullOrEmpty(saveFileDialog.FileName))
+            {
+                // Lưu hình ảnh QR vào tệp
+                Bitmap.Save(saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                Console.WriteLine($"QR Code saved to: {saveFileDialog.FileName}");
+            }
+
+            // Giải phóng tài nguyên
+          //  qrCodeImage.Dispose();
         }
     }
 }

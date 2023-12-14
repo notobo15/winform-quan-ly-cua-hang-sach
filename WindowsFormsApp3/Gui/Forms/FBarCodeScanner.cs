@@ -90,5 +90,10 @@ namespace WindowsFormsApp3.Gui.Forms
         {
             return barcode;
         }
+
+        private void materialButton1_Click_1(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

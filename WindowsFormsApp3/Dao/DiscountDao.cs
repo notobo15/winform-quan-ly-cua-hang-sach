@@ -26,14 +26,15 @@ namespace QuanLyCuaHangSach.Dao
                 var tmp = new Discount
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Name = (string)row["Name"],
-                    Quantity = (int)row["Quantity"],
-                    Value = (float)row["Value"],
-                    StartDate = (DateTime)row["StartDate"],
-                    EndDate = (DateTime)row["EndDate"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Name = Convert.ToString(row["Name"]),
+                    Quantity = Convert.ToInt32(row["Quantity"]),
+                    Value = float.Parse(row["Value"].ToString()),
+                    StartDate = Convert.ToDateTime(row["StartDate"]),
+                    EndDate = Convert.ToDateTime(row["EndDate"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
+
                 };
 
                 list.Add(tmp);
@@ -50,15 +51,15 @@ namespace QuanLyCuaHangSach.Dao
             {
                 tmp = new Discount
                 {
-                    Id = (int)row["Id"],
-                    Name =(string) row["Name"],
-                    Quantity = (int)row["Quantity"],
-                    Value = (float)row["Value"],
-                    StartDate = (DateTime)row["StartDate"],
-                    EndDate = (DateTime)row["EndDate"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Id = Convert.ToInt32(row["Id"]),
+                    Name = Convert.ToString(row["Name"]),
+                    Quantity = Convert.ToInt32(row["Quantity"]),
+                    Value = float.Parse(row["Value"].ToString()),
+                    StartDate = Convert.ToDateTime(row["StartDate"]),
+                    EndDate = Convert.ToDateTime(row["EndDate"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
             }
             return tmp;
@@ -76,12 +77,13 @@ namespace QuanLyCuaHangSach.Dao
         }
         public bool UpdateById(Discount discount)
         {
+            discount.UpdatedAt = DateTime.Now;
             string query = $"UPDATE {TableName} SET " +
                 $"`Name` = '{discount.Name}', " +
                 $"`Quantity` = '{discount.Quantity}', " +
                 $"`Value` = '{discount.Value}', " +
-                $"`StartDate` = '{discount.StartDate}', " +
-                $"`EndDate` = '{discount.EndDate}', " +
+                $"`StartDate` = '{discount.StartDate.ToString("yyyy-MM-dd HH:mm:ss")}', " +
+                $"`EndDate` = '{discount.EndDate.ToString("yyyy-MM-dd HH:mm:ss")}', " +
                 $"UpdatedAt = '{Utils.Util.FormatDateTime(discount?.UpdatedAt)}' " +
                 $"where IsDeleted = 0 and Id = {discount.Id}";
             return ConnectDb.ExecuteNonQuery(query);

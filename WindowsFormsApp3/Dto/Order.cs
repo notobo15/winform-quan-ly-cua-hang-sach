@@ -14,10 +14,11 @@ namespace QuanLyCuaHangSach.Dto
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
 
+        public string Status { get; set; }
 
         public int AccountId { get; set; }
         public Account Account { get; set; }
-        public bool IsdDeleted { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

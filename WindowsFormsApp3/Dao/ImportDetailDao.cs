@@ -10,26 +10,29 @@ using System.Threading.Tasks;
 
 namespace QuanLyCuaHangSach.Dao
 {
-    public class ImportDetailDao : ICrudDao<Role>
+    public class ImportDetailDao : ICrudDao<ImportDetail>
     {
-        public string TableName { get; set; } = "role";
+        public string TableName { get; set; } = "importdetail";
         public ImportDetailDao() { }
-        public List<Role> getAll()
+        public List<ImportDetail> getAll()
         {
 
             DataTable dt = ConnectDb.ExecuteReaderTable($"select * from {TableName} where IsDeleted = 0;");
 
-            var list = new List<Role>();
+            var list = new List<ImportDetail>();
 
             foreach (DataRow row in dt.Rows)
             {
-                var tmp = new Role
+                var tmp = new ImportDetail
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Name = (string)row["Name"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    ImportId = Convert.ToInt32(row["ImportId"]),
+                    BuyQuantity = Convert.ToInt32(row["BuyQuantity"]),
+                    BookDetailId = Convert.ToInt32(row["BookDetailId"]),
+                    Price = Convert.ToDouble(row["Price"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
 
                 list.Add(tmp);
@@ -37,20 +40,23 @@ namespace QuanLyCuaHangSach.Dao
             return list;
         }
 
-        public Role getFirstById(string id)
+        public ImportDetail getFirstById(string id)
         {
             DataTable dt = ConnectDb.ExecuteReaderTable($"select * from {TableName} where  IsDeleted = 0 and id = '{id}'");
 
-            Role tmp = null;
+            ImportDetail tmp = null;
             foreach (DataRow row in dt.Rows)
             {
-                tmp = new Role
+                tmp = new ImportDetail
                 {
-                    Id = (int)row["Id"],
-                    Name = row["Name"].ToString(),
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Id = Convert.ToInt32(row["Id"]),
+                    ImportId = Convert.ToInt32(row["ImportId"]),
+                    BuyQuantity = Convert.ToInt32(row["BuyQuantity"]),
+                    BookDetailId = Convert.ToInt32(row["BookDetailId"]),
+                    Price = Convert.ToDouble(row["Price"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
             }
             return tmp;
@@ -66,10 +72,10 @@ namespace QuanLyCuaHangSach.Dao
             }
             return false;
         }
-        public bool UpdateById(Role role)
+        public bool UpdateById(ImportDetail role)
         {
             string query = $"UPDATE {TableName} SET " +
-                $"`Name` = '{role.Name}', " +
+                $"`Price` = '{role.Price}', " +
                 $"UpdatedAt = '{Utils.Util.FormatDateTime(role?.UpdatedAt)}' " +
                 $"where IsDeleted = 0 and Id = {role.Id}";
             return ConnectDb.ExecuteNonQuery(query);
@@ -82,17 +88,20 @@ namespace QuanLyCuaHangSach.Dao
             return ConnectDb.ExecuteNonQuery(strQuery);
         }
 
-        public bool Add(Role role)
+        public bool Add(ImportDetail orderDetail)
         {
-            role.IsDeleted = false;
-            role.CreatedAt = DateTime.Now;
-            role.UpdatedAt = DateTime.Now;
-            string query = $"Insert into {TableName}(Name, CreatedAt, IsDeleted, UpdatedAt) " +
-                            $"VALUES ('{role.Name}', " +
-                            $"'{role.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}', " +
+            orderDetail.CreatedAt = DateTime.Now;
+            orderDetail.UpdatedAt = DateTime.Now;
+            string query = $"Insert into {TableName}(ImportId,BookDetailId, Price, BuyQuantity, CreatedAt, IsDeleted, UpdatedAt) " +
+                            $"VALUES (" +
+                            $"'{orderDetail.ImportId}', " +
+                            $"'{orderDetail.BookDetailId}', " +
+                            $"'{orderDetail.Price}', " +
+                            $"'{orderDetail.BuyQuantity}', " +
+                            $"'{orderDetail.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}', " +
                             $"'0', " +
-                            $"'{role.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")}')";
-            return ConnectDb.ExecuteNonQuery(query); ;
+                            $"'{orderDetail.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")}')";
+            return ConnectDb.ExecuteNonQuery(query);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuanLyCuaHangSach.Dto
 {
-    internal class ImportDetail
+    public class ImportDetail
     {
         public int Id { get; set; }
         public int ImportId { get; set; }
@@ -15,7 +15,7 @@ namespace QuanLyCuaHangSach.Dto
         public BookDetail BookDetail { get; set; }
         public double Price { get; set; }
         public int BuyQuantity { get; set; }
-        public bool IsdDeleted { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

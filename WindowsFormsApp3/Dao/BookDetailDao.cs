@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace QuanLyCuaHangSach.Dao
 {
@@ -24,15 +25,13 @@ namespace QuanLyCuaHangSach.Dao
                 var tmp = new BookDetail
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Barcode = row["Barcode"]?.ToString(),
-                    Price = Convert.ToDouble(row["Barcode"]),
-
+                    Barcode = Convert.ToString(row["Barcode"]),
                     BookId = Convert.ToInt32(row["BookId"]),
-                    SupplierId = Convert.ToInt32(row["SupplierId"]),
-
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Quantity = Convert.ToInt32(row["Quantity"]),
+                    SupplierId = row["SupplierId"] != DBNull.Value ? Convert.ToInt32(row["SupplierId"]) : 0,
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
 
                 list.Add(tmp);
@@ -50,15 +49,13 @@ namespace QuanLyCuaHangSach.Dao
                 tmp = new BookDetail
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Barcode = row["Barcode"]?.ToString(),
-                    Price = Convert.ToDouble(row["Barcode"]),
-
+                    Barcode = Convert.ToString(row["Barcode"]),
                     BookId = Convert.ToInt32(row["BookId"]),
-                    SupplierId = Convert.ToInt32(row["SupplierId"]),
-
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Quantity = Convert.ToInt32(row["Quantity"]),
+                    SupplierId = row["SupplierId"] != DBNull.Value ? Convert.ToInt32(row["SupplierId"]) : 0,
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
             }
             return tmp;
@@ -75,13 +72,27 @@ namespace QuanLyCuaHangSach.Dao
 
         public bool DeleteById(string id)
         {
-            string strQuery = $"UPDATE {TableName} set IsDeleted = 1 where TenTaiKhoan='{id}'";
+            string strQuery = $"UPDATE {TableName} set IsDeleted = 1 where id='{id}'";
 
             return ConnectDb.ExecuteNonQuery(strQuery);
         }
 
+        public bool  UpdateQuantitySell(int id, int quantity)
+        {
+            string strQuery = $"UPDATE {TableName} set Quantity = Quantity - {quantity} where id='{id}'";
+
+            return ConnectDb.ExecuteNonQuery(strQuery);
+        }
+        public bool UpdateQuantityImport(int id, int quantity)
+        {
+            string strQuery = $"UPDATE {TableName} set Quantity = Quantity + {quantity} where id='{id}'";
+
+            return ConnectDb.ExecuteNonQuery(strQuery);
+        }
         public bool Add(BookDetail book)
         {
+            book.CreatedAt = DateTime.Now;
+            book.UpdatedAt = DateTime.Now;
             string query = $"Insert into {TableName}(Barcode, Price, BookId,SupplierId, IsDeleted, CreatedAt, UpdatedAt) " +
                             $"VALUES ('{book.Barcode}', " +
                             $"'{book.Price}', " +
@@ -91,6 +102,20 @@ namespace QuanLyCuaHangSach.Dao
                             $"'{book.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}', " +
                             $"'{book.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")}')";
             return ConnectDb.ExecuteNonQuery(query); ;
+        }
+        public bool AvailableSell(int bookDetailId, int quantitySell)
+        {
+            DataTable dt = ConnectDb.ExecuteReaderTable($@"
+                        SELECT bookdetail.BookId,
+                       book.Name AS book_title,
+                       bookdetail.quantity AS available_quantity
+                        FROM bookdetail
+                        JOIN book ON book.id = bookdetail.BookId
+                        WHERE bookdetail.BookId = {bookDetailId}
+                        HAVING available_quantity >= {quantitySell};
+            ");
+          
+            return dt.Rows.Count > 0;
         }
     }
 }

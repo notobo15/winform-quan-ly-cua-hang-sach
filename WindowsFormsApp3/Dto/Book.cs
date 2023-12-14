@@ -17,9 +17,9 @@ namespace QuanLyCuaHangSach.Dto
         public DateTime PublicationDate { get; set; }
         public int TotalPage { get; set; }
         public string Format { get; set; }
-        public string Quantity { get; set; }
+        public int Quantity { get; set; }
         public string Language { get; set; }
-
+        public double Price { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
         public int PublisherId { get; set; }

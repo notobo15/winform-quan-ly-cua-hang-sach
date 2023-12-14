@@ -15,6 +15,10 @@ namespace QuanLyCuaHangSach.Dto
         public int BookId { get; set; }
         public Book Book { get; set; }
 
+        public bool IsSold { get; set; }
+
+        public int Quantity { get; set; }
+
         public int SupplierId { get; set; }
         public Supplier Supplier { get; set; }
         public bool IsDeleted { get; set; }

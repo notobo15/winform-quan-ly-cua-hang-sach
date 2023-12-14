@@ -14,8 +14,12 @@ namespace QuanLyCuaHangSach.Dto
         public DateTime BirthDay { get; set; }
 
         public bool IsDeleted { get; set; }
+        public int Gender { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
+        public string FullName
+        {
+            get { return $"{LastName} {FirstName}"; }
+        }
     }
 }

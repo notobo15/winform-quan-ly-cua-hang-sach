@@ -25,12 +25,13 @@ namespace QuanLyCuaHangSach.Dao
                 Author tmp = new Author
                 {
                     Id = Convert.ToInt32(row["Id"]),
+                    Gender = Convert.ToInt32(row["Gender"]),
                     FirstName = row["FirstName"]?.ToString(),
                     LastName = row["LastName"]?.ToString(),
-                    BirthDay = (DateTime)row["BirthDay"],
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    BirthDay =Convert.ToDateTime(row["BirthDay"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
 
                 list.Add(tmp);
@@ -49,11 +50,12 @@ namespace QuanLyCuaHangSach.Dao
                 {
                      Id = Convert.ToInt32(row["Id"]),
                      FirstName = row["FirstName"]?.ToString(),
+                     Gender = Convert.ToInt32(row["Gender"]),
                      LastName = row["LastName"]?.ToString(),
-                     BirthDay = (DateTime)row["BirthDay"],
-                     IsDeleted = (bool)row["IsDeleted"],
-                     CreatedAt = (DateTime)row["CreatedAt"],
-                     UpdatedAt = (DateTime)row["UpdatedAt"],
+                     BirthDay = Convert.ToDateTime(row["BirthDay"]),
+                     IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                     CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                     UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                  };
             }
             return tmp;
@@ -77,7 +79,7 @@ namespace QuanLyCuaHangSach.Dao
                             $"VALUES ('{author.FirstName}', " +
                             $"'{author.LastName}', " +
                             $"'{author.BirthDay.ToString("yyyy-MM-dd")}', " +
-                            $"'{author.IsDeleted}', " +
+                            $"'0', " +
                             $"'{author.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}', " +
                             $"'{author.UpdatedAt.ToString("yyyy-MM-dd HH:mm:ss")}')";
             return  ConnectDb.ExecuteNonQuery(query); ;

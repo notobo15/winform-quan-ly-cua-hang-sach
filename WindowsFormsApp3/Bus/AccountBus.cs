@@ -35,12 +35,25 @@ namespace QuanLyCuaHangSach.Bus
             return Dao.Add(author);
         }
 
-        public bool Login(string username, string password)
+        public Account Login(string username, string password)
         {
-            if(Dao.Login(username, password) != null)
+            var result = Dao.Login(username, password);
+            if(result != null)
+            {
+                return result;
+            }else
+            {
+                return null;
+            }
+        }
+
+        public bool ResetPassword(string username, string password)
+        {
+            if (Dao.ResetPassword(username, password))
             {
                 return true;
-            }else
+            }
+            else
             {
                 return false;
             }

@@ -25,13 +25,13 @@ namespace QuanLyCuaHangSach.Dao
             {
                 var tmp = new Supplier
                 {
-                    Id = Convert.ToInt32(row["Id"]) ,
-                    Name =row["Name"]?.ToString(),
-                    Phone = row["Phone"]?.ToString(),
-                    Address = row["Address"]?.ToString(),
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Id = Convert.ToInt32(row["Id"]),
+                    Name = Convert.ToString(row["Name"]),
+                    Phone = Convert.ToString(row["Phone"]),
+                    Address = Convert.ToString(row["Address"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
 
                 list.Add(tmp);
@@ -49,12 +49,12 @@ namespace QuanLyCuaHangSach.Dao
                 tmp = new Supplier
                 {
                     Id = Convert.ToInt32(row["Id"]),
-                    Name = row["Name"]?.ToString(),
-                    Phone = row["Phone"]?.ToString(),
-                    Address = row["Address"]?.ToString(),
-                    IsDeleted = (bool)row["IsDeleted"],
-                    CreatedAt = (DateTime)row["CreatedAt"],
-                    UpdatedAt = (DateTime)row["UpdatedAt"],
+                    Name = Convert.ToString(row["Name"]),
+                    Phone = Convert.ToString(row["Phone"]),
+                    Address = Convert.ToString(row["Address"]),
+                    IsDeleted = Convert.ToBoolean(row["IsDeleted"]),
+                    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
+                    UpdatedAt = Convert.ToDateTime(row["UpdatedAt"]),
                 };
             }
             return tmp;

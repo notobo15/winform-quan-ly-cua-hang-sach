@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WindowsFormsApp3.Dto;
 using Timer = System.Windows.Forms.Timer;
 
 namespace WindowsFormsApp3
@@ -19,6 +20,7 @@ namespace WindowsFormsApp3
 
         readonly MaterialSkin.MaterialSkinManager materialSkinManager;
         AccountBus accountBus = new AccountBus();
+        RoleBus roleBus = new RoleBus();
         public FLogin()
         {
             InitializeComponent();
@@ -54,9 +56,15 @@ namespace WindowsFormsApp3
 
 
 
-            bool loginSuccess = accountBus.Login(txtUsername.Text, txtPassword.Text);
-            if (loginSuccess)
+            var loginSuccess = accountBus.Login(txtUsername.Text, txtPassword.Text);
+            if (loginSuccess != null)
             {
+                Authentication.Username = txtUsername.Text;
+                Authentication.UserId = loginSuccess.Id;
+                Authentication.RoleId = loginSuccess.RoleId;
+
+                var role = roleBus.getFirstById(loginSuccess.RoleId.ToString());
+                Authentication.Role = role.Name;
                 this.Hide();
                 var fLoading = new FLoading();
                 fLoading.Show();
@@ -80,9 +88,11 @@ namespace WindowsFormsApp3
                     {
                         progress++;
                     }
-
                 };
                 timer.Start();
+            }else
+            {
+                MessageBox.Show("Đăng nhập thất bại.Vui lòng kiểm tra Username và Password.", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

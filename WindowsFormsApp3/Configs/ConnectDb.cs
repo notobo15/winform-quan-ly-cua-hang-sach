@@ -16,40 +16,32 @@ namespace QuanLyCuaHangSach.Configs
         // private static readonly string ServerName = @"103.101.163.106";
         // private static readonly string tenServer = @"LAPTOP-I7PSPJDI\SQLEXPRESS";
         private static readonly string ServerName = @"localhost";
-        private static readonly string DatabaseName = "bookstoredb";
+        private static readonly string DatabaseName = "bookstore";
 
         private static string strConnect = "server=" + ServerName + ";database=" +
            DatabaseName + ";user=root;password=; pooling = false; convert zero datetime=True";
 
 
         public ConnectDb() {
-            MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
-            builder.Password = "";
-            builder.UserID = "root";
-            builder.Database = "bookstoredb";
-            builder.Server = "localhost";
-            builder.Pooling = true;
-            
-           // strConnect = builder.ToString() + " convert zero datetime=True";
+          
         }
 
-        public static bool CustomExecute(string strQuerry)
+        public static int ExecuteScalar(string strQuerry)
         {
             try
             {
                 MySqlConnection connection = new MySqlConnection(strConnect);
-                // SqlConnection connection = new SqlConnection(strConnect);
                 connection.Open();
                
                 MySqlCommand command = new MySqlCommand(strQuerry, connection);
-                command.ExecuteNonQuery();
+                int orderId = Convert.ToInt32(command.ExecuteScalar());
                 connection.Close();
-                return true;
+                return orderId;
             }
             catch(MySqlException ex)
             {
                 MessageBox.Show(ex.Message);
-                return false;
+                return 0;
             }
         }
 
