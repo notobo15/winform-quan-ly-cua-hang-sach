@@ -64,7 +64,7 @@ namespace QuanLyCuaHangSach.Utils
                 package.Save();
             }
         }
-        public static void ImportToExcel()
+        public static string ImportToExcel()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -75,9 +75,11 @@ namespace QuanLyCuaHangSach.Utils
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string filePath = openFileDialog.FileName;
-                ImportExcel importExcel = new ImportExcel(filePath);
-                importExcel.ShowDialog();
+                return filePath;
+                //ImportExcel importExcel = new ImportExcel(filePath);
+                //  importExcel.ShowDialog();
             }
+            return "";
         }
         public static void ExportToExcel(DataGridView dataGridView)
         {

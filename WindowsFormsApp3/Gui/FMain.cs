@@ -1,9 +1,12 @@
 ﻿
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using LiveCharts;
+using LiveCharts.Wpf;
 using MaterialSkin;
 using MaterialSkin.Controls;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using Org.BouncyCastle.Crypto;
 using QuanLyCuaHangSach.Bus;
 using QuanLyCuaHangSach.Dao;
@@ -24,10 +27,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 using WindowsFormsApp3.Dto;
 using WindowsFormsApp3.Gui.Forms;
 using WindowsFormsApp3.Gui.Report;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Path = System.IO.Path;
 
 namespace WindowsFormsApp3
 {
@@ -109,6 +114,8 @@ namespace WindowsFormsApp3
             setButtonRole(true);
             setButtonDiscount(true);
             initBus();
+
+            cbxImport.Items.AddRange(new object[] { "Category", "Account", "Author", "Book", "Book Detail", "Role", "Customer", "Publisher", "Supplier" });
 
         }
 
@@ -199,6 +206,44 @@ namespace WindowsFormsApp3
             setButtonBook(true);
             InitImport();
             InitOrders();
+
+            cartesianChart1.Dock = DockStyle.Fill;
+            var a = GetMonthlyTotalOrders(Orders);
+
+            cartesianChart1.Series = new LiveCharts.SeriesCollection
+            {
+
+            new ColumnSeries
+                {
+                    Title = "Số đơn đặt hàng",
+                   //Values = new ChartValues<int>() {1,2,2,3,3,20,10,2,1,2,3,3},
+                   Values = new ChartValues<int>(GetMonthlyTotalOrders(Orders)),
+                }
+            };
+
+            cartesianChart1.AxisX.Add(new Axis
+            {
+                Title = "Tháng",
+                Labels = GetMonthLabels()
+            });
+
+          
+        }
+        public static List<int> GetMonthlyTotalOrders(List<Order> orders)
+        {
+            var monthlyTotals = new List<int>();
+
+            for (int i = 1; i <= 12; i++)
+            {
+                int count = orders.Count(o => o.OrderDate.Month == i);
+                monthlyTotals.Add(count);
+            }
+
+            return monthlyTotals;
+        }
+        private List<string> GetMonthLabels()
+        {
+            return Enumerable.Range(1, 12).Select(i => $"Tháng {i}").ToList();
         }
         public void InitAccount()
         {
@@ -975,6 +1020,15 @@ namespace WindowsFormsApp3
                 return;
             if (Util.checkBirthday(txtAccountBirthday, "Ngày sinh"))
                 return;
+
+
+            var check = Accounts.FirstOrDefault(a => a.UserName.Trim() == txtAccountUsername.Text.Trim());
+            if(check != null)
+            {
+                MessageBox.Show("Username đã tồn tại", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtAccountUsername.Focus();
+                return;
+            }
             var newData = new Account()
             {
                 Id = Convert.ToInt32(txtAccountId?.Text),
@@ -2468,5 +2522,291 @@ namespace WindowsFormsApp3
                 }
             }
         }
+        // --------------------------------------------------
+        public string pathImPortExcel { get; set; }
+        public bool IsCheckSuccess { get; set; } = false;
+
+        private void materialButton25_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show(pathImPortExcel);
+            LoadExcelData(pathImPortExcel);
+        }
+        DataTable dt = null;
+        private void LoadExcelData(string filePath)
+        {
+            IsCheckSuccess = false;
+            using (ExcelPackage package = new ExcelPackage(new System.IO.FileInfo(filePath)))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+
+                dt = new DataTable();
+
+                // Lặp qua các cột và thêm chúng vào DataTable
+                foreach (var firstRowCell in worksheet.Cells[1, 1, 1, worksheet.Dimension.End.Column])
+                {
+                    dt.Columns.Add(firstRowCell.Text);
+                }
+
+                // Lặp qua các dòng và thêm chúng vào DataTable
+                for (int rowNumber = 2; rowNumber <= worksheet.Dimension.End.Row; rowNumber++)
+                {
+                    var row = worksheet.Cells[rowNumber, 1, rowNumber, worksheet.Dimension.End.Column];
+                    DataRow newRow = dt.Rows.Add();
+                    foreach (var cell in row)
+                    {
+                        newRow[cell.Start.Column - 1] = cell.Text;
+                    }
+                }
+
+                // Hiển thị dữ liệu trong DataGridView
+                dataGridView1.DataSource = dt;
+            }
+        }
+
+
+        private bool ValidateData(DataGridView dataGridView)
+        {
+            try
+            {
+                foreach (DataGridViewRow row in dataGridView.Rows)
+                {
+                    foreach (DataGridViewCell cell in row.Cells)
+                    {
+                        if (cell.Value == null || string.IsNullOrWhiteSpace(cell.Value.ToString()))
+                        {
+                            MessageBox.Show($"Dữ liệu tại hàng {cell.RowIndex + 1}, cột {cell.ColumnIndex + 1} không được để trống. Vui lòng kiểm tra lại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Đã xảy ra lỗi: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        private void materialButton22_Click(object sender, EventArgs e)
+        {
+
+            this.pathImPortExcel = Util.ImportToExcel();
+            LoadExcelData(pathImPortExcel);
+        }
+
+        private void materialButton27_Click(object sender, EventArgs e)
+        {
+
+            if (!IsCheckSuccess)
+            {
+                MessageBox.Show($"Bạn chưa check dữ liệu", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            int count = 0;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                // Kiểm tra nếu hàng không phải là hàng trống và có dữ liệu để chèn
+                if (!row.IsNewRow)
+                {
+                    count++;
+                    string name = cbxImport.SelectedItem.ToString().Trim().ToLower();
+                    switch (name)
+                    {
+                        case "category":
+                            var newDate = new Category()
+                            {
+                                Name = row.Cells[1].Value.ToString(),
+                            };
+                            CategoryBus.Add(newDate);
+                            break;
+                        case "account":
+
+                            int gender;
+                            if (row.Cells[4].Value.ToString() == "Nam")
+                                gender = 1;
+                            else
+                                gender = 0;
+                            var account = new Account()
+                            {
+                                Name = row.Cells[1].Value.ToString(),
+                                UserName = row.Cells[2].Value.ToString(),
+                                Phone = row.Cells[3].Value.ToString(),
+                                BirthDay = Convert.ToDateTime(row.Cells[4].Value.ToString()),
+                                Gender = gender,
+                                RoleId = 1
+
+                            };
+                            AccountBus.Add(account);
+                            break;
+                        case "author":
+
+                            break;
+                        case "book":
+
+                            break;
+                        case "book detail":
+
+                            break;
+                        case "role":
+
+                            break;
+                        case "customer":
+
+                            break;
+                        case "discount":
+
+                            break;
+                        case "publisher":
+
+                            break;
+                        case "supplier":
+
+                            break;
+                    }
+                }
+            }
+            if (count == dataGridView1.Rows.Count)
+            {
+                MessageBox.Show($"Import dữ liệu vào DB thành công.", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void materialButton26_Click(object sender, EventArgs e)
+        {
+            if (ValidateData(dataGridView1))
+            {
+                IsCheckSuccess = true;
+                string name = cbxImport.SelectedItem.ToString().Trim().ToLower();
+                switch (name) { 
+                    case "category":
+                        if (!ValidateColumnNames(dt, new string[] { "id",  "name" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "account":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "name", "username", "phone", "birthday", "gender", "role" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "author":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "firstname","lastname",  "birthday", "gender" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "book":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "name", "price", "format", "publisherDate", "Totalpage", "Quantity", "category", "AuthorId", "SupplierId" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "book detail":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "barcode", "book", "supplierId" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "role":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "name" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "customer":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "name", "phone", "birthday", "address", "gender" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "discount":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "name", "value","quantity", "start date", "end date"  }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "publisher":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "name" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+                    case "supplier":
+                        if (!ValidateColumnNames(dt, new string[] { "id", "name", "phone","address" }))
+                            return;
+                        else
+                            IsCheckSuccess = true;
+                        break;
+
+                }
+                if(IsCheckSuccess)
+                {
+                    MessageBox.Show($"kiểm tra dữ liệu thành công.", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+            }
+            else
+            {
+                IsCheckSuccess = false;
+                 MessageBox.Show($"Đữ liệu không được bỏ trống.", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            }
+        }
+
+        private bool ValidateColumnNames(DataTable dt)
+        {
+            string[] expectedColumns = { "id", "name" };
+
+            if (dt.Columns.Count != expectedColumns.Length)
+            {
+                MessageBox.Show("Có lỗi.Bạn phải chắc chắc file excel có đủ cột", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            // Check if the column names match the expected order
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                if (!string.Equals(dt.Columns[i].ColumnName, expectedColumns[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show($"Invalid column name at position {i + 1}. The column should be named '{expectedColumns[i]}'.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        private bool ValidateColumnNames(DataTable dt, string[] expectedColumns)
+        {
+            if (dt.Columns.Count != expectedColumns.Length )
+            {
+                string expectedColumnList = string.Join(", ", expectedColumns);
+                MessageBox.Show($"Có lỗi. Bạn phải chắc chắn file Excel có đủ {expectedColumns.Length} cột ({expectedColumnList}).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            // Check if the column names match the expected order
+            List<string> incorrectColumns = new List<string>();
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                if (!string.Equals(dt.Columns[i].ColumnName, expectedColumns[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    incorrectColumns.Add(dt.Columns[i].ColumnName);
+                }
+            }
+
+            if (incorrectColumns.Count > 0)
+            {
+                string incorrectColumnsList = string.Join(", ", incorrectColumns);
+                MessageBox.Show($"Các cột không hợp lệ: {incorrectColumnsList}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            return true;
+        }
+
+
+
     }
 }
